@@ -62,8 +62,4 @@ public class BeanAdapter extends AbstractTypeAdapter<Object> {
         }
         return null;
     }
-
-    ;
-
-
 }
