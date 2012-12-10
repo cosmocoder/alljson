@@ -1,7 +1,5 @@
 package org.alljson.types;
 
-import com.google.common.base.Joiner;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +9,9 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class JsonArray implements JsonValue, List<JsonValue> {
 
+    private static final String INITIAL_CHAR = "[";
+    private static final String FINAL_CHAR = "]";
+    private static final String VALUE_SEPARATOR = ",";
     private List<JsonValue> values;
 
     public JsonArray(Iterable<JsonValue> values){
@@ -144,6 +145,22 @@ public class JsonArray implements JsonValue, List<JsonValue> {
 
     @Override
     public String toString() {
-        return "[" + Joiner.on(",").join(values) + "]";
+        final StringBuilder stringBuilder = new StringBuilder();
+        appendStringTo(stringBuilder);
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public void appendStringTo(StringBuilder stringBuilder) {
+        stringBuilder.append(INITIAL_CHAR);
+        Iterator<JsonValue> valuesIterator = values.iterator();
+        if(valuesIterator.hasNext()) {
+            stringBuilder.append(valuesIterator.next());
+        }
+        while (valuesIterator.hasNext()) {
+            stringBuilder.append(VALUE_SEPARATOR);
+            valuesIterator.next().appendStringTo(stringBuilder);
+        }
+        stringBuilder.append(FINAL_CHAR);
     }
 }

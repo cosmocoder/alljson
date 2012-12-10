@@ -16,4 +16,9 @@ public class JsonNumber implements JsonPrimitive<Number> {
     public String toString() {
         return number.toString();
     }
+
+    @Override
+    public void appendStringTo(final StringBuilder stringBuilder) {
+        stringBuilder.append(this.toString());
+    }
 }

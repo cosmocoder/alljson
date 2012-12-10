@@ -32,15 +32,23 @@ public class JsonString implements JsonPrimitive {
 
     @Override
     public String toString() {
-        return QUOTATION_MARK +
-                value.replace(QUOTATION_MARK, QUOTATION_MARK_ENCODED)
-                        .replace(REVERSE_SOLIDUS, REVERSE_SOLIDUS_ENCODED)
-                        .replace(SOLIDUS, SOLIDUS_ENCODED)
-                        .replace(BACKSPACE, BACKSPACE_ENCODED)
-                        .replace(FORMFEED, FORMFEED_ENCODED)
-                        .replace(NEWLINE, NEWLINE_ENCODED)
-                        .replace(CARRIAGE_RETURN, CARRIAGE_RETURN_ENCODED)
-                        .replace(HORIZONTAL_TAB, HORIZONTAL_TAB_ENCODED) +
-                QUOTATION_MARK;
+        StringBuilder stringBuilder = new StringBuilder();
+        appendStringTo(stringBuilder);
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public void appendStringTo(final StringBuilder stringBuilder) {
+        stringBuilder.append(QUOTATION_MARK);
+        String encoded = value.replace(QUOTATION_MARK, QUOTATION_MARK_ENCODED)
+                .replace(REVERSE_SOLIDUS, REVERSE_SOLIDUS_ENCODED)
+                .replace(SOLIDUS, SOLIDUS_ENCODED)
+                .replace(BACKSPACE, BACKSPACE_ENCODED)
+                .replace(FORMFEED, FORMFEED_ENCODED)
+                .replace(NEWLINE, NEWLINE_ENCODED)
+                .replace(CARRIAGE_RETURN, CARRIAGE_RETURN_ENCODED)
+                .replace(HORIZONTAL_TAB, HORIZONTAL_TAB_ENCODED);
+        stringBuilder.append(encoded);
+        stringBuilder.append(QUOTATION_MARK);
     }
 }

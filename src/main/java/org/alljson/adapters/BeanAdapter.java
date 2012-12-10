@@ -1,12 +1,11 @@
 package org.alljson.adapters;
 
-import org.alljson.properties.FieldAccessor;
-import org.alljson.properties.Getter;
-import org.alljson.properties.PropertyReader;
+import org.alljson.support.FieldAccessor;
+import org.alljson.support.Getter;
+import org.alljson.support.PropertyReader;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static com.google.common.collect.Sets.newHashSet;

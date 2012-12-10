@@ -17,4 +17,9 @@ public class JsonBoolean implements JsonPrimitive<Boolean> {
     public String toString() {
         return String.valueOf(value);
     }
+
+    @Override
+    public void appendStringTo(final StringBuilder stringBuilder) {
+        stringBuilder.append(this.toString());
+    }
 }

@@ -1,10 +1,17 @@
 package org.alljson.types;
 
-import com.google.common.base.Joiner;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class JsonObject implements Map<JsonString, JsonValue>, JsonValue {
+
+    private static final String INITIAL_CHAR = "{";
+    private static final String FINAL_CHAR = "}";
+    private static final String PROPERTY_SEPARATOR = ",";
+    private static final String KEY_VALUE_SERAPATOR = ":";
+
     private Map<JsonString, JsonValue> properties;
 
     public JsonObject(Map<JsonString, JsonValue> properties) {
@@ -70,57 +77,28 @@ public class JsonObject implements Map<JsonString, JsonValue>, JsonValue {
     }
 
     public String toString() {
-
-        List<String> jsonProperties = new ArrayList<String>();
-        for (Entry<JsonString, JsonValue> property : this.properties.entrySet()) {
-            jsonProperties.add(property.getKey() + ":" + property.getValue());
-        }
-        return "{" + Joiner.on(",").join(jsonProperties) + "}";
-    }
-      /*
-    public static JsonValue fromMap(final Object object) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        appendStringTo(stringBuilder);
+        return stringBuilder.toString();
     }
 
-    public static JsonObject fromBean(Object object) {
-        Map<String, JsonValue> properties = new LinkedHashMap<String, JsonValue>();
-        final Class<?> clazz = object.getClass();
-        for (Field field : org.alljson.properties.Properties.getAnnotatedFields(clazz, JsonProperty.class)) {
-            final String propertyName = field.getName();
-            if (!properties.containsKey(propertyName)) { //TODO resolve name by annotation first
-                final Object value = org.alljson.properties.Properties.getValue(object, field);
-                properties.put(propertyName, JsonValues.fromObject(value));
-            } else {
-                //TODO: log duplicated as debug
-            }
+    @Override
+    public void appendStringTo(StringBuilder stringBuilder) {
+        stringBuilder.append(INITIAL_CHAR);
+        Iterator<Entry<JsonString,JsonValue>> entryIterator = properties.entrySet().iterator();
+        if(entryIterator.hasNext()) {
+            appendPropertyTo(stringBuilder, entryIterator.next());
         }
-        for (Method method : org.alljson.properties.Properties.getAnnotatedMethods(clazz, JsonProperty.class)) {
-            final String propertyName = method.getName(); //TODO: throw if its not a getter and don't have name in annotation
-            if (!properties.containsKey(propertyName)) { //TODO check if method have parameters and throw , substring getterName
-                final Object value = org.alljson.properties.Properties.getValue(object, method);
-                properties.put(propertyName, JsonValues.fromObject(value));
-            } else {
-                //TODO: log duplicated as debug
-            }
+        while (entryIterator.hasNext()) {
+            stringBuilder.append(PROPERTY_SEPARATOR);
+            appendPropertyTo(stringBuilder, entryIterator.next());
         }
-        for (Field field : org.alljson.properties.Properties.getPublicFields(clazz)) {
-            final String propertyName = field.getName();
-            if (!properties.containsKey(propertyName)) {
-                final Object value = org.alljson.properties.Properties.getValue(object, field);
-                properties.put(propertyName, JsonValues.fromObject(value));
-            } else {
-                //TODO: log duplicated as debug
-            }
-        }
-        for (Method getter : org.alljson.properties.Properties.getPublicGetters(clazz)) {
-            final String propertyName = getter.getName(); //TODO: substring
-            if (!properties.containsKey(propertyName)) {
-                final Object value = org.alljson.properties.Properties.getValue(object, getter);
-                properties.put(propertyName, JsonValues.fromObject(value));
-            } else {
-                //TODO: log duplicated as debug
-            }
-        }
-        return new JsonObject(properties);
+        stringBuilder.append(FINAL_CHAR);
     }
-    */
+
+    private void appendPropertyTo(final StringBuilder stringBuilder, final Entry<JsonString, JsonValue> entry) {
+        entry.getKey().appendStringTo(stringBuilder);
+        stringBuilder.append(KEY_VALUE_SERAPATOR);
+        entry.getValue().appendStringTo(stringBuilder);
+    }
 }

@@ -1,11 +1,14 @@
 package org.alljson.serializers;
 
+import com.google.common.base.Objects;
 import org.alljson.adapters.TypeAdapter;
-import org.alljson.serializers.*;
 import org.alljson.types.JsonNull;
 import org.alljson.types.JsonValue;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newTreeMap;
@@ -25,59 +28,61 @@ public class SerializationContext {
         this.serializers.putAll(serializers);
     }
 
-    public JsonValue serialize(Object object) {
-        if(object == null) {
-            return JsonNull.INSTANCE;
+    private <T> T findAndStore(Class clazz, final Map<Class, T> findHere, Map<Class, T> storeHere) {
+        T adapter;
+
+        if (findHere.containsKey(clazz)) {
+            adapter = findHere.get(clazz); //even if null
+        } else {
+            adapter = findFromSuperclasses(clazz, findHere);
+            storeHere.put(clazz, adapter); //even if null
         }
 
-        Object primaryAdapted = adapt(object, primaryAdapters.keySet(), primaryAdapters);
-
-        Serializer serializer = findSerializer(primaryAdapted.getClass());
-        if (serializer != null) {
-            return serializer.serialize(primaryAdapted, this);
-        }
-
-        Object secondaryAdapted = adapt(primaryAdapted, secondaryAdapters.keySet(), secondaryAdapters);
-        if(secondaryAdapted != primaryAdapted) {
-            return serialize(secondaryAdapted);
-        }
-
-        throw new IllegalArgumentException(String.format("Could not serialize %s", object.getClass()));
+        return adapter;
     }
 
-    private Serializer findSerializer(Class objectClass) {
-        for (Class serializableClass : serializers.keySet()){
-            if(serializableClass.isAssignableFrom(objectClass)) {
-                return serializers.get(serializableClass);
+    private <T> T findFromSuperclasses(final Class clazz, final Map<Class, T> findHere) {
+        for (Class findedClass : findHere.keySet()) {
+            if (findedClass.isAssignableFrom(clazz)) {
+                return findHere.get(findedClass);
             }
         }
         return null;
     }
 
-    private Object adapt(Object object, Iterable<Class> adaptableClasses, Map<Class, TypeAdapter> adaptersMap) {
-        List<Class> hierarchy = filterHierarchy(adaptableClasses, object.getClass());
-        if (hierarchy.isEmpty()) {
-            return object;
+
+    public JsonValue serialize(Object object) {
+        if (object == null) {
+            return JsonNull.INSTANCE;
         }
 
-        Class adaptableClass = hierarchy.get(0);
-        Object adapted = adaptersMap.get(adaptableClass).adapt(object);
+        Object adaptedObject = adapt(object, primaryAdapters);
 
-        List<Class> usedHierarchy = filterHierarchy(hierarchy, adaptableClass);
-        List<Class> nextAdaptableClasses = newArrayList(adaptableClasses);
-        nextAdaptableClasses.removeAll(usedHierarchy);
+        Serializer serializer = findAndStore(adaptedObject.getClass(), serializers, serializers);
+        if (serializer != null) {
+            return serializer.serialize(adaptedObject, this);
+        }
 
-        return adapt(adapted, nextAdaptableClasses, adaptersMap);
+        TypeAdapter fallBackAdapter = findAndStore(adaptedObject.getClass(), secondaryAdapters, primaryAdapters);
+        if (fallBackAdapter != null) {
+            return serialize(fallBackAdapter.adapt(adaptedObject));
+        }
+
+        throw new IllegalArgumentException(String.format("Could not serialize %s", object.getClass().getCanonicalName()));
     }
 
-    private List<Class> filterHierarchy(Iterable<Class> classes, Class objectClass) {
-        List<Class> filtered = new ArrayList<Class>();
-        for (Class clazz : classes) {
-            if (clazz.isAssignableFrom(objectClass)) {
-                filtered.add(clazz);
+    private Object adapt(final Object object, Map<Class, TypeAdapter> adapters) {
+        Object last;
+        Object current = object;
+        TypeAdapter adapter;
+        do {
+            adapter = findAndStore(current.getClass(), adapters, adapters);
+            last = current;
+            if(adapter != null) {
+                current = adapter.adapt(current);
             }
-        }
-        return filtered;
+        } while (!Objects.equal(current, last) );
+        return current;
     }
 
     private static class ClassComparator implements Comparator<Class> {
@@ -91,19 +96,38 @@ public class SerializationContext {
         @Override
         public int compare(Class first, Class second) {
 
+            //Same class, same order
             if (first.equals(second)) {
                 return 0;
             }
 
+            //More specific class first
             if (second.isAssignableFrom(first)) {
                 return -1;
             }
 
+            //More specific class first
             if (first.isAssignableFrom(second)) {
                 return 1;
             }
 
-            return Integer.valueOf(originalOrder.indexOf(first)).compareTo(originalOrder.indexOf(second));
+            //Both classes are not original, sort by name
+            if(!originalOrder.contains(first) && !originalOrder.contains(second)) {
+                return first.getCanonicalName().compareTo(second.getCanonicalName());
+            }
+
+            //Newly added class first
+            if(!originalOrder.contains(first)) {
+                return -1;
+            }
+
+            //Newly added class first
+            if(!originalOrder.contains(second)) {
+                return 1;
+            }
+
+            //Newly added class first
+            return Integer.valueOf(originalOrder.indexOf(second)).compareTo(originalOrder.indexOf(first));
         }
     }
 
