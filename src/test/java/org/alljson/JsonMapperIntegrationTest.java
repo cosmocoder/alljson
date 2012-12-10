@@ -51,17 +51,17 @@ public class JsonMapperIntegrationTest {
     }
 
     private SerializationContext newSerializationContext() {
-        Map<Class, TypeAdapter> adapters;
-        Map<Class, Serializer> serializers;
-        Map<Class, TypeAdapter> fallbackAdapters;
+        Map<Class<?>, TypeAdapter<?>> adapters;
+        Map<Class<?>, Serializer<?>> serializers;
+        Map<Class<?>, TypeAdapter<?>> fallbackAdapters;
 
-        adapters = new LinkedHashMap<Class, TypeAdapter>();
+        adapters = new LinkedHashMap<Class<?>, TypeAdapter<?>>();
         adapters.put(Object[].class, new ArrayAdapter());
         adapters.put(Multimap.class, new MultimapAdapter());
         adapters.put(LocalDate.class, new ToStringAdapter());
         adapters.put(Enum.class, new ToStringAdapter());
 
-        serializers = new LinkedHashMap<Class, Serializer>();
+        serializers = new LinkedHashMap<Class<?>, Serializer<?>>();
         serializers.put(String.class, new StringSerializer());
         serializers.put(Number.class, new NumberSerializer());
         serializers.put(Boolean.class, new BooleanSerializer());
@@ -69,7 +69,7 @@ public class JsonMapperIntegrationTest {
         serializers.put(Map.class, new MapSerializer());
         serializers.put(JsonValue.class, new JsonValueSerializer());
 
-        fallbackAdapters = new LinkedHashMap<Class, TypeAdapter>();
+        fallbackAdapters = new LinkedHashMap<Class<?>, TypeAdapter<?>>();
         fallbackAdapters.put(Object.class, new BeanAdapter());
 
         return new SerializationContext(adapters, fallbackAdapters, serializers);

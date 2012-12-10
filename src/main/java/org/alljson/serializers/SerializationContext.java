@@ -15,20 +15,20 @@ import static com.google.common.collect.Maps.newTreeMap;
 
 public class SerializationContext {
 
-    private final Map<Class, TypeAdapter> primaryAdapters;
-    private final Map<Class, TypeAdapter> secondaryAdapters;
-    private final Map<Class, Serializer> serializers;
+    private final Map<Class<?>, TypeAdapter<?>> primaryAdapters;
+    private final Map<Class<?>, TypeAdapter<?>> secondaryAdapters;
+    private final Map<Class<?>, Serializer> serializers;
 
-    public SerializationContext(Map<Class, TypeAdapter> primaryAdapters, Map<Class, TypeAdapter> secondaryAdapters, Map<Class, Serializer> serializers) {
+    public SerializationContext(Map<Class<?>, TypeAdapter<?>> primaryAdapters, Map<Class<?>, TypeAdapter<?>> secondaryAdapters, Map<Class<?>, Serializer<?>> serializers) {
         this.primaryAdapters = newTreeMap(new ClassComparator(primaryAdapters.keySet()));
         this.primaryAdapters.putAll(primaryAdapters);
         this.secondaryAdapters = newTreeMap(new ClassComparator(secondaryAdapters.keySet()));
         this.secondaryAdapters.putAll(secondaryAdapters);
-        this.serializers = new TreeMap<Class, Serializer>(new ClassComparator(serializers.keySet()));
+        this.serializers = new TreeMap<Class<?>, Serializer>(new ClassComparator(serializers.keySet()));
         this.serializers.putAll(serializers);
     }
 
-    private <T> T findAndStore(Class clazz, final Map<Class, T> findHere, Map<Class, T> storeHere) {
+    private <T> T findAndStore(Class<?> clazz, final Map<Class<?>, T> findHere, Map<Class<?>, T> storeHere) {
         T adapter;
 
         if (findHere.containsKey(clazz)) {
@@ -41,8 +41,8 @@ public class SerializationContext {
         return adapter;
     }
 
-    private <T> T findFromSuperclasses(final Class clazz, final Map<Class, T> findHere) {
-        for (Class findedClass : findHere.keySet()) {
+    private <T> T findFromSuperclasses(final Class<?> clazz, final Map<Class<?>, T> findHere) {
+        for (Class<?> findedClass : findHere.keySet()) {
             if (findedClass.isAssignableFrom(clazz)) {
                 return findHere.get(findedClass);
             }
@@ -71,7 +71,7 @@ public class SerializationContext {
         throw new IllegalArgumentException(String.format("Could not serialize %s", object.getClass().getCanonicalName()));
     }
 
-    private Object adapt(final Object object, Map<Class, TypeAdapter> adapters) {
+    private Object adapt(final Object object, Map<Class<?>, TypeAdapter<?>> adapters) {
         Object last;
         Object current = object;
         TypeAdapter adapter;
@@ -85,16 +85,16 @@ public class SerializationContext {
         return current;
     }
 
-    private static class ClassComparator implements Comparator<Class> {
+    private static class ClassComparator implements Comparator<Class<?>> {
 
-        private final List<Class> originalOrder;
+        private final List<Class<?>> originalOrder;
 
-        private ClassComparator(Iterable<Class> originalOrder) {
+        private ClassComparator(Iterable<Class<?>> originalOrder) {
             this.originalOrder = newArrayList(originalOrder);
         }
 
         @Override
-        public int compare(Class first, Class second) {
+        public int compare(Class<?> first, Class<?> second) {
 
             //Same class, same order
             if (first.equals(second)) {

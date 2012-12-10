@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class JsonObject implements Map<JsonString, JsonValue>, JsonValue {
+public class JsonObject implements JsonValue, Map<JsonString, JsonValue> {
 
     private static final String INITIAL_CHAR = "{";
     private static final String FINAL_CHAR = "}";
