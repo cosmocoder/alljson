@@ -24,5 +24,5 @@ Note that there is a type named ```JsonValue```, so you can handle the output JS
 	* ```JsonNumber``` for numbers
 	* ```JsonNull``` for null
 
-![JsonObject, JsonArray and JsonPrimitive extend JsonValue. JsonString, JsonBoolean, JsonNumber and JsonNull extend JsonPrimitive.](http://yuml.me/94471b6b.jpg)
+![JsonObject, JsonArray and JsonPrimitive extend JsonValue. JsonString, JsonBoolean, JsonNumber and JsonNull extend JsonPrimitive.](http://yuml.me/92c84e1e)
 
