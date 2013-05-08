@@ -1,6 +1,6 @@
 package org.alljson.types;
 
-public class JsonNumber implements JsonPrimitive<Number> {
+public class JsonNumber implements JsonPrimitive {
     private final Number number;
 
     public JsonNumber(Number number) {

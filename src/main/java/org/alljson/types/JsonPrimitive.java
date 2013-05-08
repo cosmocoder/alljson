@@ -1,5 +1,5 @@
 package org.alljson.types;
 
-public interface JsonPrimitive<T> extends JsonValue {
-     T getValue();
+public interface JsonPrimitive extends JsonValue {
+     Object getValue();
 }

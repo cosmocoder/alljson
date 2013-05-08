@@ -26,7 +26,7 @@ public class JsonString implements JsonPrimitive {
     }
 
     @Override
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 

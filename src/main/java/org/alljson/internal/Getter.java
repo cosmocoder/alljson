@@ -1,5 +1,6 @@
-package org.alljson.support;
+package org.alljson.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -20,5 +21,10 @@ public class Getter implements PropertyReader {
         } catch (InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @Override
+    public Annotation getAnnotationOfType(final Class<Annotation> type) {
+        return getter.getAnnotation(type);
     }
 }

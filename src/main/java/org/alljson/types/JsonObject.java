@@ -1,9 +1,6 @@
 package org.alljson.types;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JsonObject implements JsonValue, Map<JsonString, JsonValue> {
 
@@ -15,7 +12,7 @@ public class JsonObject implements JsonValue, Map<JsonString, JsonValue> {
     private Map<JsonString, JsonValue> properties;
 
     public JsonObject(Map<JsonString, JsonValue> properties) {
-        this.properties = properties;
+        this.properties = new LinkedHashMap<JsonString, JsonValue>(properties);
     }
 
     public int size() {

@@ -1,6 +1,6 @@
 package org.alljson.types;
 
-public class JsonBoolean implements JsonPrimitive<Boolean> {
+public class JsonBoolean implements JsonPrimitive {
 
     private final boolean value;
 

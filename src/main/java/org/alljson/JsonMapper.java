@@ -1,16 +1,22 @@
 package org.alljson;
 
-import org.alljson.serializers.SerializationContext;
+import org.alljson.serialization.JsonSerializer;
 import org.alljson.types.JsonValue;
 
 public class JsonMapper {
-    private final SerializationContext serializationContext;
+    private final JsonSerializer serializer;
 
-    public JsonMapper(final SerializationContext serializationContext) {
-        this.serializationContext = serializationContext;
+    private JsonMapper(final JsonSerializer serializer) {
+        this.serializer = serializer;
     }
 
     public JsonValue getJson(Object object) {
-        return serializationContext.serialize(object);
+        return serializer.convert(object, serializer);
     }
+
+    public static JsonMapper create() {
+        return new JsonMapper(JsonSerializer.create());
+    }
+
+
 }

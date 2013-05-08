@@ -1,6 +1,6 @@
 package org.alljson.types;
 
-public enum JsonNull implements JsonPrimitive<Void> {
+public enum JsonNull implements JsonPrimitive {
     INSTANCE;
 
     @Override
