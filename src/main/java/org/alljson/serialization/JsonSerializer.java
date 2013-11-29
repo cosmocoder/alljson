@@ -8,6 +8,7 @@ import org.alljson.serialization.adapters.BeanToMapAdapter;
 import org.alljson.serialization.adapters.MultimapToMapAdapter;
 import org.alljson.serialization.adapters.ToStringAdapter;
 import org.alljson.serialization.templates.SimpleSerializer;
+import org.alljson.templates.ComposedConverter;
 import org.alljson.templates.Converter;
 import org.alljson.types.JsonValue;
 import org.joda.time.LocalDate;
@@ -35,7 +36,7 @@ public class JsonSerializer extends SimpleSerializer<Object> {
             Adaptation<? extends Object, ? extends Object> adaptation = bestAdaptation(clazz);
             adapter = adapter == null ?
                     adaptation.getAdapter() :
-                    new ComposedTypeAdapter(adapter, adaptation.getAdapter(), adapter.getInputClass(), adapter.getOutputClass());
+                    new ComposedConverter(adapter, adaptation.getAdapter(), adapter.getInputClass(), adapter.getOutputClass());
             clazz = adaptation.getOutputClass();
         } while (!JsonValue.class.isAssignableFrom(clazz));
         return (JsonValue) adapter.convert(input, this);
@@ -87,66 +88,74 @@ public class JsonSerializer extends SimpleSerializer<Object> {
 
     private Comparator<Class> getClosestClassComparator(final Class myClass) {
         return new Comparator<Class>() {
-            private static final int FIRST_IS_CLOSEST = -1;
-            private static final int SECOND_IS_CLOSEST = 1;
+            private static final int FIRST_IS_CLOSER = -1;
+            private static final int SECOND_IS_CLOSER = 1;
             private static final int CLASSES_ARE_EQUAL = 0;
 
             @Override
             public int compare(final Class first, final Class second) {
 
                 if (first.equals(second)) {
+                    /* equal classes */
                     return CLASSES_ARE_EQUAL;
                 }
 
                 if (first.equals(myClass)) {
-                    return FIRST_IS_CLOSEST;
+                    /* first class is equal to current */
+                    return FIRST_IS_CLOSER;
                 }
 
                 if (second.equals(myClass)) {
-                    return SECOND_IS_CLOSEST;
+                    /* second class is equal to current */
+                    return SECOND_IS_CLOSER;
                 }
 
                 if (first.isAssignableFrom(myClass)) {
                     if (!second.isAssignableFrom(myClass)) {
-                        return FIRST_IS_CLOSEST;
+                        /* fist class is a superclass/superinterface, but the second is not */
+                        return FIRST_IS_CLOSER;
                     }
                 } else if (second.isAssignableFrom(myClass)) {
-                    return SECOND_IS_CLOSEST;
+                    /* second class is a superclass/superinterface, but the first is not */
+                    return SECOND_IS_CLOSER;
                 } else {
+                    /* neither two classes are superclasses/superinterfaces,sort by cannonical name */
                     return first.getCanonicalName().compareTo(second.getCanonicalName());
                 }
 
 
                 //Instance of both classes, which one is closest?
 
-                //First is closest
                 if (second.isAssignableFrom(first)) {
-                    return FIRST_IS_CLOSEST;
+                    // Same hierachy: MyClass --|> FIRST --|> SECOND
+                    return FIRST_IS_CLOSER;
                 }
 
-                //Second is closest
                 if (first.isAssignableFrom(second)) {
-                    return SECOND_IS_CLOSEST;
+                    // Same hierachy:  MyClass --|> SECOND --|> FIRST
+                    return SECOND_IS_CLOSER;
                 }
 
                 //Classes are not in the same hierarchy
 
                 //If one of the classes is object the other wins
                 if (first.equals(Object.class)) {
-                    return SECOND_IS_CLOSEST;
+                    // MyClass -|> SECOND, FIRST=Object
+                    return SECOND_IS_CLOSER;
                 }
 
                 if (second.equals(Object.class)) {
-                    return FIRST_IS_CLOSEST;
+                    // MyClass -|> FIRST, SECOND=Object
+                    return FIRST_IS_CLOSER;
                 }
 
                 //The superclass beats the interface
                 if (!first.isInterface()) {
-                    return FIRST_IS_CLOSEST;
+                    return FIRST_IS_CLOSER;
                 }
 
                 if (!second.isInterface()) {
-                    return SECOND_IS_CLOSEST;
+                    return SECOND_IS_CLOSER;
                 }
 
                 //Both are interfaces (in different hierarchy),first declared wins
@@ -155,11 +164,11 @@ public class JsonSerializer extends SimpleSerializer<Object> {
                 do {
                     for (Class currentInterface : currentClass.getInterfaces()) {
                         if (currentInterface.equals(first)) {
-                            return FIRST_IS_CLOSEST;
+                            return FIRST_IS_CLOSER;
                         }
 
                         if (currentInterface.equals(second)) {
-                            return SECOND_IS_CLOSEST;
+                            return SECOND_IS_CLOSER;
                         }
                     }
                     currentClass = myClass.getSuperclass();

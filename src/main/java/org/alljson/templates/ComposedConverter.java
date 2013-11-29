@@ -1,15 +1,15 @@
-package org.alljson.serialization;
+package org.alljson.templates;
 
 import org.alljson.templates.Converter;
 
-public class ComposedTypeAdapter<I,O> implements Converter<I,O> {
+public class ComposedConverter<I,O> implements Converter<I,O> {
 
     private final Class<I> inputClass;
     private final Class<O> outputClass;
     private final Converter<I,Object> first;
     private final Converter<Object,O> second;
 
-    public <T> ComposedTypeAdapter(final Converter<I, T> first, final Converter<? super T, O> second, final Class<I> inputClass, final Class<O> outputClass) {
+    public <T> ComposedConverter(final Converter<I, T> first, final Converter<? super T, O> second, final Class<I> inputClass, final Class<O> outputClass) {
         this.inputClass = inputClass;
         this.outputClass = outputClass;
         this.first = (Converter<I,Object>) first;

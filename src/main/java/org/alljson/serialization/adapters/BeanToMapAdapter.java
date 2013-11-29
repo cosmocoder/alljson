@@ -5,6 +5,7 @@ import org.alljson.templates.NullableConverter;
 import org.alljson.internal.FieldAccessor;
 import org.alljson.internal.Getter;
 import org.alljson.internal.PropertyReader;
+import org.alljson.templates.SimpleConverter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -14,14 +15,14 @@ import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 
-public class BeanToMapAdapter extends NullableConverter<Object,Map<String,Object>> {
+public class BeanToMapAdapter extends SimpleConverter<Object,Map<String,Object>> {
 
     public BeanToMapAdapter() {
         super(Object.class, (Class) Map.class);
     }
 
     @Override
-    public Map<String, Object> convertNotNullValue(Object bean, final Converter masterAdapter) {
+    public Map<String, Object> convertNotNullValue(Object bean) {
         Map<String, Getter> getters = getters(bean, newHashSet("class"));
         Map<String, FieldAccessor> fields = fields(bean, getters.keySet());
         Map<String, PropertyReader> properties = new LinkedHashMap<String, PropertyReader>();
