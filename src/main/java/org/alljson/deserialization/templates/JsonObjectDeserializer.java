@@ -20,10 +20,10 @@ public class JsonObjectDeserializer extends NullableDeserializer<JsonObject,Obje
             for (JsonString jsonKey : input.keySet()) {
                 final String propertyName = jsonKey.getValue();
                 PropertyWriter propertyWriter = Accessors.writerFor(output.getClass(), propertyName);
-                final JsonValue jsonValue = input.get(jsonKey);
+                final JsonValue propertyValueAsJson = input.get(jsonKey);
                 final Class<?> propertyClass = propertyWriter.getPropertyClass();
-                final Object convertedPropety = masterConverter.convert(jsonValue, propertyClass, masterConverter);
-                propertyWriter.setValueTo(output, convertedPropety);
+                final Object propertyValue = masterConverter.convert(propertyValueAsJson, propertyClass, masterConverter);
+                propertyWriter.setValueTo(output, propertyValue);
             }
             return output;
         } catch (Exception e) {
