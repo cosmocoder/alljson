@@ -1,5 +1,6 @@
 package org.alljson.deserialization.templates;
 
+import org.alljson.templates.Converter;
 import org.alljson.types.JsonPrimitive;
 
 public class JsonPrimitiveDeserializer extends SimpleDeserializer<JsonPrimitive,Object> {
@@ -12,4 +13,5 @@ public class JsonPrimitiveDeserializer extends SimpleDeserializer<JsonPrimitive,
     protected Object convertNotNullValue(final JsonPrimitive input) {
         return input.getValue();
     }
+
 }

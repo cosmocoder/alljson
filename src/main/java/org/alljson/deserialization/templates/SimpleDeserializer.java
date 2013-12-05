@@ -11,7 +11,7 @@ public abstract class SimpleDeserializer<I extends JsonValue, O> extends Nullabl
     }
 
     @Override
-    protected O convertNotNullValue(final I input, final Converter masterAdapter) {
+    protected O convertNotNullValue(final I input, final Class<O> outputClass, final Converter masterAdapter) {
         return convertNotNullValue(input);
     }
 

@@ -24,6 +24,11 @@ public class Getter implements PropertyReader {
     }
 
     @Override
+    public Class<?> getPropertyClass() {
+        return getter.getReturnType();
+    }
+
+    @Override
     public Annotation getAnnotationOfType(final Class<Annotation> type) {
         return getter.getAnnotation(type);
     }

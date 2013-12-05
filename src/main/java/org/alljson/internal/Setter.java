@@ -27,4 +27,9 @@ public class Setter implements PropertyWriter {
             throw new IllegalStateException(e);
         }
     }
+
+    @Override
+    public Class<?> getPropertyClass() {
+        return setter.getParameterTypes()[0];
+    }
 }

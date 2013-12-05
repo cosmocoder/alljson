@@ -21,6 +21,11 @@ public class FieldAccessor implements PropertyReader, PropertyWriter {
     }
 
     @Override
+    public Class<?> getPropertyClass() {
+        return field.getClass();
+    }
+
+    @Override
     public void setValueTo(final Object object, final Object value) {
         try {
             field.setAccessible(true);

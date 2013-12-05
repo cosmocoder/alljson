@@ -1,15 +1,14 @@
 package org.alljson.serialization.templates;
 
 import org.alljson.templates.Converter;
+import org.alljson.templates.NullableConverter;
 import org.alljson.types.JsonNull;
 import org.alljson.types.JsonValue;
 
-public abstract class NullableSerializer<I> implements Converter<I,JsonValue> {
-
-    private final Class<I> inputClass;
+public abstract class NullableSerializer<I> extends NullableConverter<I,JsonValue> {
 
     protected NullableSerializer(final Class<I> inputClass) {
-        this.inputClass = inputClass;
+        super(inputClass, JsonValue.class);
     }
 
     @Override
@@ -17,13 +16,4 @@ public abstract class NullableSerializer<I> implements Converter<I,JsonValue> {
         return (input == null) ? JsonNull.INSTANCE : convertNotNullValue(input, masterConverter);
     }
 
-    protected abstract JsonValue convertNotNullValue(I input, final Converter masterAdapter);
-
-    public Class<I> getInputClass() {
-        return inputClass;
-    }
-
-    public Class<JsonValue> getOutputClass() {
-        return JsonValue.class;
-    }
 }
