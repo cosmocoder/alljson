@@ -2,6 +2,8 @@ package org.alljson.templates;
 
 import org.alljson.templates.Converter;
 
+import java.lang.reflect.Type;
+
 public class ComposedConverter<I,O> implements Converter<I,O> {
 
     private final Class<I> inputClass;
@@ -17,9 +19,9 @@ public class ComposedConverter<I,O> implements Converter<I,O> {
     }
 
     @Override
-    public O convert(final I input, Class<O> outputClass, final Converter masterConverter) {
+    public O convert(final I input, Type outputType, final Converter masterConverter) {
         Object object = first.convert(input, masterConverter);
-        return second.convert(object, outputClass, masterConverter);
+        return second.convert(object, outputType, masterConverter);
     }
 
     @Override

@@ -3,7 +3,6 @@ package org.alljson.serialization;
 import org.alljson.serialization.templates.NullableSerializer;
 import org.alljson.templates.Converter;
 import org.alljson.types.JsonObject;
-import org.alljson.types.JsonPrimitive;
 import org.alljson.types.JsonString;
 import org.alljson.types.JsonValue;
 

@@ -1,21 +1,25 @@
 package org.alljson.types;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import org.alljson.internal.ParseResult;
+
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class JsonArray implements JsonValue, List<JsonValue> {
+public class JsonArray extends JsonValue implements List<JsonValue> {
 
-    private static final String INITIAL_CHAR = "[";
-    private static final String FINAL_CHAR = "]";
-    private static final String VALUE_SEPARATOR = ",";
+    static final String INITIAL_CHAR = "[";
+    static final String FINAL_CHAR = "]";
+    static final String VALUE_SEPARATOR = ",";
+    static final JsonArrayParser PARSER = new JsonArrayParser();
     private List<JsonValue> values;
 
-    public JsonArray(Iterable<JsonValue> values){
+    public JsonArray(Iterable<JsonValue> values) {
         this.values = newArrayList(values);
+    }
+
+    public JsonArray() {
+        this.values = newArrayList();
     }
 
     @Override
@@ -29,8 +33,8 @@ public class JsonArray implements JsonValue, List<JsonValue> {
     }
 
     @Override
-    public boolean contains(Object o) {
-        return values.contains(o);
+    public boolean contains(Object key) {
+        return values.contains(key);
     }
 
     @Override
@@ -151,10 +155,10 @@ public class JsonArray implements JsonValue, List<JsonValue> {
     }
 
     @Override
-    public void appendStringTo(StringBuilder stringBuilder) {
+    void appendStringTo(StringBuilder stringBuilder) {
         stringBuilder.append(INITIAL_CHAR);
         Iterator<JsonValue> valuesIterator = values.iterator();
-        if(valuesIterator.hasNext()) {
+        if (valuesIterator.hasNext()) {
             stringBuilder.append(valuesIterator.next());
         }
         while (valuesIterator.hasNext()) {
@@ -162,5 +166,38 @@ public class JsonArray implements JsonValue, List<JsonValue> {
             valuesIterator.next().appendStringTo(stringBuilder);
         }
         stringBuilder.append(FINAL_CHAR);
+    }
+
+    public static JsonArray parse(String text) {
+        return JsonArray.PARSER.parse(text);
+    }
+
+    static final class JsonArrayParser extends AbstractParser<JsonArray>{
+        @Override
+        public ParseResult<JsonArray> doPartialParse(final String text) {
+            if (text.length() > 1 && text.startsWith(INITIAL_CHAR)) {
+                JsonArray json = new JsonArray(new ArrayList<JsonValue>());
+                char[] objectString = text.toCharArray();
+                String remainingText = text.substring(1);
+                for(int i=1; i< text.length()-1; i++) {
+                    ParseResult<JsonValue> valueParse = JsonValue.PARSER.partialParse(remainingText);
+                    remainingText = remainingText.substring(valueParse.getNextPosition());
+                    ParseResult<String> separatorParse = SeparatorParser.INSTANCE.partialParse(remainingText);
+                    remainingText = remainingText.substring(separatorParse.getNextPosition());
+                    json.add(valueParse.getParsedValue());
+                    String separator = separatorParse.getParsedValue();
+                    if(separator.equals(FINAL_CHAR)) {
+                        break;
+                    } else if(separator.equals(VALUE_SEPARATOR)) {
+                        continue;
+                    } else {
+                        throw new IllegalArgumentException(String.format("Can't parse JsonArray from text, = \"%s\", unexpected separator = %s", text, separator));
+                    }
+                }
+                return new ParseResult<JsonArray>(json, text.length() - remainingText.length());
+            }
+
+            throw new IllegalArgumentException(String.format("Can't parse JsonArray from text = \"%s\"", text));
+        }
     }
 }

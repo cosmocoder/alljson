@@ -4,6 +4,8 @@ import org.alljson.templates.Converter;
 import org.alljson.templates.SimpleConverter;
 import org.alljson.types.JsonValue;
 
+import java.lang.reflect.Type;
+
 public abstract class SimpleDeserializer<I extends JsonValue, O> extends NullableDeserializer<I, O> {
 
     protected SimpleDeserializer(final Class<I> inputClass, final Class<O> outputClass) {
@@ -11,7 +13,7 @@ public abstract class SimpleDeserializer<I extends JsonValue, O> extends Nullabl
     }
 
     @Override
-    protected O convertNotNullValue(final I input, final Class<O> outputClass, final Converter masterAdapter) {
+    protected O convertNotNullValue(final I input, final Type type, final Converter masterAdapter) {
         return convertNotNullValue(input);
     }
 

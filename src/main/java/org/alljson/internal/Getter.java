@@ -3,6 +3,7 @@ package org.alljson.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 public class Getter implements PropertyReader {
     private final Method getter;
@@ -24,8 +25,8 @@ public class Getter implements PropertyReader {
     }
 
     @Override
-    public Class<?> getPropertyClass() {
-        return getter.getReturnType();
+    public Type getPropertyType() {
+        return getter.getGenericReturnType();
     }
 
     @Override

@@ -2,6 +2,8 @@ package org.alljson.templates;
 
 import org.alljson.templates.Converter;
 
+import java.lang.reflect.Type;
+
 public abstract class NullableDirectedConverter<I,O> implements Converter<I,O> {
 
     private final Class<I> inputClass;
@@ -18,11 +20,11 @@ public abstract class NullableDirectedConverter<I,O> implements Converter<I,O> {
     }
 
     @Override
-    public O convert(final I input, final Class<O> outputClass, final Converter masterConverter) {
+    public O convert(final I input, final Type outputType, final Converter masterConverter) {
         return (input == null) ? null : convertNotNullValue(input, outputClass, masterConverter);
     }
 
-    protected abstract O convertNotNullValue(I input, Class<O> outputClass, final Converter masterAdapter);
+    protected abstract O convertNotNullValue(final I input, final Type outputType, final Converter masterAdapter);
 
     public Class<I> getInputClass() {
         return inputClass;

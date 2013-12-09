@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import org.alljson.types.JsonNumber;
+import org.alljson.types.JsonObject;
 import org.alljson.types.JsonValue;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.LocalDate;
@@ -31,18 +33,19 @@ public class JsonMapperTest {
                         .build()
         );
 
-        JsonMapper mapper = JsonMapper.create();
-        ObjectMapper jacksonMapper = new ObjectMapper();
+
+        JsonNumber.create(2f);
         long time = new Date().getTime();
-        for (int i = 0; i < 1; i++) {
+        JsonMapper mapper = JsonMapper.create();
+        for (int i = 0; i < 1000; i++) {
             mapper.getJson(ze).toString();
         }
         long timeAllJson = new Date().getTime() - time;
         System.out.println("ALLJSON: " + mapper.getJson(ze) + " " + timeAllJson);
 
-
         time = new Date().getTime();
-        for (int i = 0; i < 1; i++) {
+        ObjectMapper jacksonMapper = new ObjectMapper();
+        for (int i = 0; i < 1000; i++) {
             jacksonMapper.writeValueAsString(ze);
         }
 
@@ -59,7 +62,7 @@ public class JsonMapperTest {
 
     class User {
         private final String name;
-        private final int age;
+        private int age;
         private final List<String> teams;
         private final boolean black;
         private final Multimap<String, LocalDate> lifeEvents;
@@ -78,6 +81,10 @@ public class JsonMapperTest {
 
         public int getAge() {
             return age;
+        }
+
+        void setAge(final int age) {
+            this.age = age;
         }
 
         public String[] getTeams() {

@@ -2,6 +2,7 @@ package org.alljson.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 public class FieldAccessor implements PropertyReader, PropertyWriter {
     private final Field field;
@@ -21,8 +22,8 @@ public class FieldAccessor implements PropertyReader, PropertyWriter {
     }
 
     @Override
-    public Class<?> getPropertyClass() {
-        return field.getClass();
+    public Type getPropertyType() {
+        return field.getGenericType();
     }
 
     @Override

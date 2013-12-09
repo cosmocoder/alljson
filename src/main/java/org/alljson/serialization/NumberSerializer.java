@@ -11,6 +11,6 @@ public class NumberSerializer extends SimpleSerializer<Number> {
 
     @Override
     public JsonNumber convertNotNullValue(Number input) {
-        return new JsonNumber(input);
+        return JsonNumber.create(input);
     }
 }

@@ -1,7 +1,13 @@
 package org.alljson.types;
 
-public enum JsonNull implements JsonPrimitive {
-    INSTANCE;
+import com.google.common.base.CharMatcher;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+public final class JsonNull extends JsonPrimitive {
+    public static final JsonNull INSTANCE = new JsonNull();
+    public static final String NULL_STRING = "null";
+    static final JsonNullParser PARSER = new JsonNullParser();
 
     @Override
     public Void getValue() {
@@ -16,5 +22,26 @@ public enum JsonNull implements JsonPrimitive {
     @Override
     public void appendStringTo(final StringBuilder stringBuilder) {
         stringBuilder.append(this.toString());
+    }
+
+    public static JsonNull fromJsonString(String string) {
+        final String trimmedString = CharMatcher.WHITESPACE.trimFrom(string);
+        if(trimmedString.equals(NULL_STRING)) {
+            return INSTANCE;
+        } else {
+            throw new IllegalArgumentException(String.format("Can't parse JsonNull from string = \"%s\"", trimmedString));
+        }
+    }
+
+    public static JsonNull parse(String text) {
+        return JsonNull.PARSER.parse(text);
+    }
+
+    static class JsonNullParser extends AbstractDomainParser<JsonNull> {
+
+        @Override
+        Iterable<JsonNull> getDomain() {
+            return newArrayList(INSTANCE);
+        }
     }
 }

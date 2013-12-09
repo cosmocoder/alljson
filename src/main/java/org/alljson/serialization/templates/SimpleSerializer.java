@@ -2,6 +2,7 @@ package org.alljson.serialization.templates;
 
 
 import org.alljson.templates.Converter;
+import org.alljson.types.JsonBoolean;
 import org.alljson.types.JsonValue;
 
 public abstract class SimpleSerializer<I> extends NullableSerializer<I> {

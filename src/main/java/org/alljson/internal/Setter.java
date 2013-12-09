@@ -3,12 +3,13 @@ package org.alljson.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 public class Setter implements PropertyWriter {
     private final Method setter;
 
-    public Setter(final Method getter) {
-        this.setter = getter;
+    public Setter(final Method setter) {
+        this.setter = setter;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class Setter implements PropertyWriter {
     }
 
     @Override
-    public Class<?> getPropertyClass() {
-        return setter.getParameterTypes()[0];
+    public Type getPropertyType() {
+        return setter.getGenericParameterTypes()[0];
     }
 }

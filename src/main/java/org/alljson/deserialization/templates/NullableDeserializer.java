@@ -5,6 +5,8 @@ import org.alljson.templates.NullableDirectedConverter;
 import org.alljson.types.JsonNull;
 import org.alljson.types.JsonValue;
 
+import java.lang.reflect.Type;
+
 public abstract class NullableDeserializer<I extends JsonValue,O> extends NullableDirectedConverter<I,O> {
 
     protected NullableDeserializer(final Class<I> inputClass, final Class<O> outputClass) {
@@ -13,8 +15,8 @@ public abstract class NullableDeserializer<I extends JsonValue,O> extends Nullab
 
     /* Overrides the internal convert handling JsonNulls */
     @Override
-    public O convert(I input, Class<O> outputClass, Converter masterConverter) {
-        return JsonNull.INSTANCE.equals(input) || null == input? null : convertNotNullValue(input, outputClass, masterConverter);
+    public O convert(I input, Type outputType, Converter masterConverter) {
+        return JsonNull.INSTANCE.equals(input) || null == input? null : convertNotNullValue(input, outputType, masterConverter);
     }
 
 }

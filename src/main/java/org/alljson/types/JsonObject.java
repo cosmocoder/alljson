@@ -1,18 +1,29 @@
 package org.alljson.types;
 
+import org.alljson.internal.ParseResult;
+
 import java.util.*;
 
-public class JsonObject implements JsonValue, Map<JsonString, JsonValue> {
+public class JsonObject extends JsonValue implements Map<JsonString, JsonValue> {
 
     private static final String INITIAL_CHAR = "{";
     private static final String FINAL_CHAR = "}";
     private static final String PROPERTY_SEPARATOR = ",";
     private static final String KEY_VALUE_SERAPATOR = ":";
+    public static final JsonObjectParser PARSER = new JsonObjectParser();
+
+    public static JsonObject parse(String text) {
+        return PARSER.parse(text);
+    }
 
     private Map<JsonString, JsonValue> properties;
 
     public JsonObject(Map<JsonString, JsonValue> properties) {
         this.properties = new LinkedHashMap<JsonString, JsonValue>(properties);
+    }
+
+    public JsonObject() {
+        this.properties = new LinkedHashMap<JsonString, JsonValue>();
     }
 
     public int size() {
@@ -23,24 +34,33 @@ public class JsonObject implements JsonValue, Map<JsonString, JsonValue> {
         return properties.isEmpty();
     }
 
-    public boolean containsKey(final Object o) {
-        return properties.containsKey(o);
+    public boolean containsKey(Object key) {
+        if (key instanceof String) {
+            key = new JsonString((String) key);
+        }
+        return properties.containsKey(key);
     }
 
-    public boolean containsValue(final Object o) {
+    public boolean containsValue(Object o) {
         return properties.containsValue(o);
     }
 
-    public JsonValue get(final Object o) {
-        return properties.get(o);
+    public JsonValue get(Object key) {
+        if (key instanceof String) {
+            key = new JsonString((String) key);
+        }
+        return properties.get(key);
     }
 
     public JsonValue put(final JsonString s, final JsonValue jsonValue) {
         return properties.put(s, jsonValue);
     }
 
-    public JsonValue remove(final Object o) {
-        return properties.remove(o);
+    public JsonValue remove(Object key) {
+        if (key instanceof String) {
+            key = new JsonString((String) key);
+        }
+        return properties.remove(key);
     }
 
     public void putAll(final Map<? extends JsonString, ? extends JsonValue> map) {
@@ -82,8 +102,8 @@ public class JsonObject implements JsonValue, Map<JsonString, JsonValue> {
     @Override
     public void appendStringTo(StringBuilder stringBuilder) {
         stringBuilder.append(INITIAL_CHAR);
-        Iterator<Entry<JsonString,JsonValue>> entryIterator = properties.entrySet().iterator();
-        if(entryIterator.hasNext()) {
+        Iterator<Entry<JsonString, JsonValue>> entryIterator = properties.entrySet().iterator();
+        if (entryIterator.hasNext()) {
             appendPropertyTo(stringBuilder, entryIterator.next());
         }
         while (entryIterator.hasNext()) {
@@ -97,5 +117,53 @@ public class JsonObject implements JsonValue, Map<JsonString, JsonValue> {
         entry.getKey().appendStringTo(stringBuilder);
         stringBuilder.append(KEY_VALUE_SERAPATOR);
         entry.getValue().appendStringTo(stringBuilder);
+    }
+
+    static final class JsonObjectParser extends AbstractParser<JsonObject>{
+        public static final JsonObjectParser INSTANCE = new JsonObjectParser();
+
+        @Override
+        public ParseResult<JsonObject> doPartialParse(final String text) {
+            if (text.length() > 1 && text.startsWith("{")) {
+                JsonObject json = new JsonObject(new LinkedHashMap<JsonString, JsonValue>());
+                char[] objectString = text.toCharArray();
+                String remainingText = text.substring(1);
+                for(int i=1; i< text.length()-1; i++) {
+                    ParseResult<JsonString> keyParse = new JsonString.JsonStringParser().partialParse(remainingText);
+                    remainingText = remainingText.substring(keyParse.getNextPosition());
+                    ParseResult<String> keyValueSeparatorParse = KeyValueSeparatorParser.INSTANCE.partialParse(remainingText);
+                    remainingText = remainingText.substring(keyValueSeparatorParse.getNextPosition());
+                    ParseResult<JsonValue> valueParse = JsonValue.PARSER.partialParse(remainingText);
+                    remainingText = remainingText.substring(valueParse.getNextPosition());
+                    ParseResult<String> separatorParse = SeparatorParser.INSTANCE.partialParse(remainingText);
+                    remainingText = remainingText.substring(separatorParse.getNextPosition());
+
+                    json.put(keyParse.getParsedValue(),valueParse.getParsedValue());
+                    String separator = separatorParse.getParsedValue();
+                    if(separator.equals("}")) {
+                        break;
+                    } else if(separator.equals(",")) {
+                        continue;
+                    } else {
+                        throw new IllegalArgumentException(String.format("Can't parse JsonObject from text, = \"%s\", unexpected separator = %s", text, separator));
+                    }
+                }
+                return new ParseResult<JsonObject>(json, text.length() - remainingText.length());
+            }
+
+            throw new IllegalArgumentException(String.format("Can't parse JsonObject from text = \"%s\"", text));
+        }
+    }
+
+    public static class KeyValueSeparatorParser extends AbstractParser<String> {
+        public static final KeyValueSeparatorParser INSTANCE = new KeyValueSeparatorParser();
+
+        @Override
+        public ParseResult<String> doPartialParse(final String text) {
+            if (text.startsWith(KEY_VALUE_SERAPATOR)) {
+                return new ParseResult<String>(KEY_VALUE_SERAPATOR, 1);
+            }
+            throw new IllegalArgumentException();
+        }
     }
 }

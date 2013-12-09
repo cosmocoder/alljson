@@ -11,6 +11,6 @@ public class BooleanSerializer extends SimpleSerializer<Boolean> {
 
     @Override
     public JsonBoolean convertNotNullValue(Boolean input) {
-        return new JsonBoolean(input);
+        return JsonBoolean.create(input);
     }
 }
