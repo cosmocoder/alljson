@@ -1,7 +1,5 @@
 package org.alljson.types;
 
-import org.alljson.internal.ParseResult;
-
 import java.util.*;
 
 public class JsonObject extends JsonValue implements Map<JsonString, JsonValue> {
@@ -124,25 +122,34 @@ public class JsonObject extends JsonValue implements Map<JsonString, JsonValue> 
 
         @Override
         public ParseResult<JsonObject> doPartialParse(final String text) {
-            if (text.length() > 1 && text.startsWith("{")) {
+            /* { */
+            if (text.length() > 1 && text.startsWith(INITIAL_CHAR)) {
                 JsonObject json = new JsonObject(new LinkedHashMap<JsonString, JsonValue>());
                 char[] objectString = text.toCharArray();
                 String remainingText = text.substring(1);
                 for(int i=1; i< text.length()-1; i++) {
-                    ParseResult<JsonString> keyParse = new JsonString.JsonStringParser().partialParse(remainingText);
+                    /* "key" */
+                    ParseResult<JsonString> keyParse = JsonString.PARSER.partialParse(remainingText);
                     remainingText = remainingText.substring(keyParse.getNextPosition());
+
+                    /* : */
                     ParseResult<String> keyValueSeparatorParse = KeyValueSeparatorParser.INSTANCE.partialParse(remainingText);
                     remainingText = remainingText.substring(keyValueSeparatorParse.getNextPosition());
+
+                    /* value */
                     ParseResult<JsonValue> valueParse = JsonValue.PARSER.partialParse(remainingText);
                     remainingText = remainingText.substring(valueParse.getNextPosition());
+
+                    /* , or } */
                     ParseResult<String> separatorParse = SeparatorParser.INSTANCE.partialParse(remainingText);
                     remainingText = remainingText.substring(separatorParse.getNextPosition());
 
                     json.put(keyParse.getParsedValue(),valueParse.getParsedValue());
+
                     String separator = separatorParse.getParsedValue();
-                    if(separator.equals("}")) {
+                    if(separator.equals(FINAL_CHAR)) {
                         break;
-                    } else if(separator.equals(",")) {
+                    } else if(separator.equals(PROPERTY_SEPARATOR)) {
                         continue;
                     } else {
                         throw new IllegalArgumentException(String.format("Can't parse JsonObject from text, = \"%s\", unexpected separator = %s", text, separator));

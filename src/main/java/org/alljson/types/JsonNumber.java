@@ -1,13 +1,13 @@
 package org.alljson.types;
 
 import com.google.common.base.CharMatcher;
-import org.alljson.internal.ParseResult;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class JsonNumber extends JsonPrimitive {
     private final BigDecimal number;
+    static final JsonNumberParser PARSER = new JsonNumberParser();
 
     private JsonNumber(int number) {
         this.number = new BigDecimal(number);

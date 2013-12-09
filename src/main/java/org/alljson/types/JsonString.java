@@ -1,8 +1,5 @@
 package org.alljson.types;
 
-import com.google.common.base.CharMatcher;
-import org.alljson.internal.ParseResult;
-
 public class JsonString extends JsonPrimitive {
     private String value;
 
@@ -23,12 +20,11 @@ public class JsonString extends JsonPrimitive {
     private static String NEWLINE_ENCODED = "\\n";
     private static String CARRIAGE_RETURN_ENCODED = "\\r";
     private static String HORIZONTAL_TAB_ENCODED = "\\t";
+    static final JsonStringParser PARSER = new JsonStringParser();
 
     public JsonString(final String value) {
         this.value = value;
     }
-
-    static final JsonStringParser PARSER = new JsonStringParser();
 
     @Override
     public String getValue() {
@@ -61,16 +57,16 @@ public class JsonString extends JsonPrimitive {
         return PARSER.parse(text);
     }
 
-    static final class JsonStringParser extends AbstractParser<JsonString>{
+    static final class JsonStringParser extends AbstractParser<JsonString> {
         @Override
         public ParseResult<JsonString> doPartialParse(final String text) {
             char[] charArray = text.toCharArray();
             boolean escape = false;
             boolean firstFound = false;
             int firstPosition = -1;
-            for(int i=0; i<text.length(); i++) {
-                if(!escape && charArray[i] == '"') {
-                    if(!firstFound) {
+            for (int i = 0; i < text.length(); i++) {
+                if (!escape && charArray[i] == '"') {
+                    if (!firstFound) {
                         firstFound = true;
                         firstPosition = i;
                     } else {
@@ -87,14 +83,14 @@ public class JsonString extends JsonPrimitive {
 
         public JsonString exactParse(final String text) {
             if (text.length() > 1 && text.startsWith(QUOTATION_MARK) && text.endsWith(QUOTATION_MARK)) {
-                return new JsonString(text.substring(1,text.length()-1).replace(QUOTATION_MARK_ENCODED, QUOTATION_MARK)
-                                .replace(REVERSE_SOLIDUS_ENCODED, REVERSE_SOLIDUS)
-                                .replace(SOLIDUS_ENCODED, SOLIDUS)
-                                .replace(BACKSPACE_ENCODED, BACKSPACE)
-                                .replace(FORMFEED_ENCODED, FORMFEED)
-                                .replace(NEWLINE_ENCODED, NEWLINE)
-                                .replace(CARRIAGE_RETURN_ENCODED, CARRIAGE_RETURN)
-                                .replace(HORIZONTAL_TAB_ENCODED, HORIZONTAL_TAB));
+                return new JsonString(text.substring(1, text.length() - 1).replace(QUOTATION_MARK_ENCODED, QUOTATION_MARK)
+                        .replace(REVERSE_SOLIDUS_ENCODED, REVERSE_SOLIDUS)
+                        .replace(SOLIDUS_ENCODED, SOLIDUS)
+                        .replace(BACKSPACE_ENCODED, BACKSPACE)
+                        .replace(FORMFEED_ENCODED, FORMFEED)
+                        .replace(NEWLINE_ENCODED, NEWLINE)
+                        .replace(CARRIAGE_RETURN_ENCODED, CARRIAGE_RETURN)
+                        .replace(HORIZONTAL_TAB_ENCODED, HORIZONTAL_TAB));
             }
 
             throw new IllegalArgumentException(String.format("Can't parse JsonString from text = \"%s\"", text));

@@ -1,7 +1,5 @@
 package org.alljson.types;
 
-import org.alljson.internal.ParseResult;
-
 import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;

@@ -34,7 +34,6 @@ public class JsonMapperTest {
         );
 
 
-        JsonNumber.create(2f);
         long time = new Date().getTime();
         JsonMapper mapper = JsonMapper.create();
         for (int i = 0; i < 1000; i++) {

@@ -1,7 +1,6 @@
 package org.alljson.types;
 
 import com.google.common.base.Objects;
-import org.alljson.internal.ParseResult;
 
 public abstract class JsonPrimitive extends JsonValue {
     public abstract Object getValue();
@@ -51,5 +50,22 @@ public abstract class JsonPrimitive extends JsonValue {
                 return null;
             }
         }
+    }
+
+    abstract static class AbstractDomainParser<T> extends AbstractParser<T> {
+
+        private final Class domainClass = getDomain().iterator().next().getClass();
+
+        public ParseResult<T> doPartialParse(String text) {
+            for (T json : getDomain()) {
+                final String jsonText = json.toString();
+                if(text.startsWith(jsonText)) {
+                    return new ParseResult<T>(json, jsonText.length());
+                }
+            }
+            throw new IllegalArgumentException(String.format("Can't parse %s from string = \"%s\"", domainClass.getSimpleName(), text));
+        }
+
+        abstract Iterable<T> getDomain();
     }
 }

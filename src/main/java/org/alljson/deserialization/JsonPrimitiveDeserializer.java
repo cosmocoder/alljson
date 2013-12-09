@@ -1,5 +1,6 @@
-package org.alljson.deserialization.templates;
+package org.alljson.deserialization;
 
+import org.alljson.deserialization.templates.SimpleDeserializer;
 import org.alljson.templates.Converter;
 import org.alljson.types.JsonPrimitive;
 

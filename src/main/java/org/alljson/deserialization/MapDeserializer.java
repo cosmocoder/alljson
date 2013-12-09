@@ -1,7 +1,8 @@
-package org.alljson.deserialization.templates;
+package org.alljson.deserialization;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
+import org.alljson.deserialization.templates.NullableDeserializer;
 import org.alljson.internal.Accessors;
 import org.alljson.internal.Classes;
 import org.alljson.internal.PropertyWriter;
@@ -32,8 +33,13 @@ public class MapDeserializer extends NullableDeserializer<JsonObject,Map<?,?>> {
                 final JsonValue entryValueAsJson = input.get(jsonKey);
                 final Type keyType = mapType.getActualTypeArguments()[0];
                 final Type valueType = mapType.getActualTypeArguments()[1];
-                //replace by entryKeyAsJson (if not String)
-                final Object entryKey = masterConverter.convert(jsonKey, keyType, masterConverter);
+                final JsonValue entryKeyAsJson;
+                if(keyType.equals(String.class)) {
+                    entryKeyAsJson = jsonKey;
+                } else {
+                    entryKeyAsJson = JsonValue.parse(jsonKey.getValue());
+                }
+                final Object entryKey = masterConverter.convert(entryKeyAsJson, keyType, masterConverter);
                 final Object entyValue = masterConverter.convert(entryValueAsJson, valueType, masterConverter);
                 outputMap.put(entryKey,entyValue);
             }
