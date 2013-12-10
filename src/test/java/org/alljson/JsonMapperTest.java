@@ -4,6 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import org.alljson.internal.FieldAccessor;
+import org.alljson.templates.Converter;
+import org.alljson.templates.NullableDirectedConverter;
+import org.alljson.templates.SimpleConverter;
 import org.alljson.types.JsonNumber;
 import org.alljson.types.JsonObject;
 import org.alljson.types.JsonValue;
@@ -11,6 +15,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +59,6 @@ public class JsonMapperTest {
         JsonValue value = mapper.getJson(ze);
 
         assertThat(jacksonMapper.writeValueAsString(ze), is(mapper.getJson(ze).toString()));
-
     }
 
 

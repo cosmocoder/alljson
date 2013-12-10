@@ -25,12 +25,18 @@ public class ComposedConverter<I,O> implements Converter<I,O> {
     }
 
     @Override
+    public O convert(final I input, Class<O> outputType, final Converter masterConverter) {
+        Object object = first.convert(input, masterConverter);
+        return second.convert(object, outputType, masterConverter);
+    }
+
+    @Override
     public O convert(final I input, final Converter masterConverter) {
         return convert(input, outputClass, masterConverter);
     }
 
     @Override
-    public Class<I> getInputClass() {
+    public Class<I> getInputType() {
         return inputClass;
     }
 

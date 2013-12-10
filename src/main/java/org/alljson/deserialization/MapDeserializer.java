@@ -1,17 +1,12 @@
 package org.alljson.deserialization;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
 import org.alljson.deserialization.templates.NullableDeserializer;
-import org.alljson.internal.Accessors;
-import org.alljson.internal.Classes;
-import org.alljson.internal.PropertyWriter;
 import org.alljson.templates.Converter;
 import org.alljson.types.JsonObject;
 import org.alljson.types.JsonString;
 import org.alljson.types.JsonValue;
 
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;

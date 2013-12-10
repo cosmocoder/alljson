@@ -24,9 +24,14 @@ public abstract class NullableConverter<I,O> implements Converter<I,O> {
         return convert(input, masterConverter);
     }
 
+    @Override
+    public O convert(final I input, final Class<O> outputType, final Converter masterConverter) {
+        return convert(input, masterConverter);
+    }
+
     protected abstract O convertNotNullValue(I input, final Converter masterAdapter);
 
-    public Class<I> getInputClass() {
+    public Class<I> getInputType() {
         return inputClass;
     }
 

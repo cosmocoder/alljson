@@ -4,9 +4,9 @@ import org.alljson.deserialization.templates.SimpleDeserializer;
 import org.alljson.templates.Converter;
 import org.alljson.types.JsonPrimitive;
 
-public class JsonPrimitiveDeserializer extends SimpleDeserializer<JsonPrimitive,Object> {
+public class PrimitiveDeserializer extends SimpleDeserializer<JsonPrimitive,Object> {
 
-    protected JsonPrimitiveDeserializer() {
+    protected PrimitiveDeserializer() {
         super(JsonPrimitive.class, Object.class);
     }
 

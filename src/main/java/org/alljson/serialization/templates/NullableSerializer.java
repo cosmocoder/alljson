@@ -15,5 +15,4 @@ public abstract class NullableSerializer<I> extends NullableConverter<I,JsonValu
     public JsonValue convert(I input, Converter masterConverter) {
         return (input == null) ? JsonNull.INSTANCE : convertNotNullValue(input, masterConverter);
     }
-
 }

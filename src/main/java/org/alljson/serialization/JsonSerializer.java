@@ -36,7 +36,7 @@ public class JsonSerializer extends SimpleSerializer<Object> {
             Adaptation<? extends Object, ? extends Object> adaptation = bestAdaptation(clazz);
             adapter = adapter == null ?
                     adaptation.getAdapter() :
-                    new ComposedConverter(adapter, adaptation.getAdapter(), adapter.getInputClass(), adapter.getOutputClass());
+                    new ComposedConverter(adapter, adaptation.getAdapter(), adapter.getInputType(), adapter.getOutputClass());
             clazz = adaptation.getOutputClass();
         } while (!JsonValue.class.isAssignableFrom(clazz));
         return (JsonValue) adapter.convert(input, this);
@@ -229,7 +229,7 @@ public class JsonSerializer extends SimpleSerializer<Object> {
         @Override
         public Ready whenConvertingTo(final Class clazz) {
             final Converter adapter = this.adapter.get();
-            Adaptation adaptation = new Adaptation(adapter.getInputClass(), clazz, adapter);
+            Adaptation adaptation = new Adaptation(adapter.getInputType(), clazz, adapter);
             this.adapter.set(null);
             from.set(null);
             adaptations.add(adaptation);
@@ -239,7 +239,7 @@ public class JsonSerializer extends SimpleSerializer<Object> {
         @Override
         public Ready whenPossible() {
             final Converter adapter = this.adapter.get();
-            Adaptation adaptation = new Adaptation(adapter.getInputClass(), adapter.getOutputClass(), adapter);
+            Adaptation adaptation = new Adaptation(adapter.getInputType(), adapter.getOutputClass(), adapter);
             this.adapter.set(null);
             from.set(null);
             adaptations.add(adaptation);
