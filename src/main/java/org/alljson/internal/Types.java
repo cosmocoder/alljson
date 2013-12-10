@@ -58,10 +58,4 @@ public class Types {
     public static <T> HandledType<T[]> arrayOf(HandledType<T> element) {
         return of((Class) Array.newInstance(element.toClass(), 0).getClass(), element.getParameters());
     }
-
-    public static void main(String[] args) {
-        System.out.println(Array.newInstance(double.class,0).getClass());
-        System.out.println(listOf(Object.class).isAssignableFrom(listOf(String.class)));
-        System.out.println(listOf(List.class).isAssignableFrom(of(ArrayList.class,of(List.class))));
-    };
 }
